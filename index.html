@@ -3,10 +3,35 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="utility.js"></script>
+    <script type="module" src="fileLoader.js"></script>
     <title>Bloxd Schem Viewer</title>
   </head>
 
   <body>
-    <h1>Bloxd Schem Viewer</h1>
+    <div class="dropdown">
+      <div class="option">
+        <div class="nameLabel">ファイル</div>
+        <div class="dropdownMenu">
+          <button type="button" class="dropdownButton">新規</button>
+          <input type="file" id="fileInput" style="display:none">
+          <button type="button" id="attached">ファイルを読み込む</button>
+        </div>
+      </div>
+      <div class="option">
+        <div class="nameLabel">編集</div>
+        <div class="dropdownMenu">
+          <button type="button" class="dropdownButton">あいうえお</button>
+          <button type="button" class="dropdownButton">かきくけこ</button>
+        </div>
+      </div>
+      <div class="option">
+        <div class="nameLabel">表示</div>
+        <div class="dropdownMenu">
+          <button type="button" class="dropdownButton">あいうえお</button>
+          <button type="button" class="dropdownButton">かきくけこ</button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

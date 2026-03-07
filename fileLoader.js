@@ -1,5 +1,7 @@
 import avsc from 'https://cdn.jsdelivr.net/npm/avsc@5.7.9/+esm';
 import { Buffer } from "https://cdn.jsdelivr.net/npm/buffer@6.0.3/+esm";
+globalThis.Buffer = Buffer;
+
 import { expandChunk } from './utility.js';
 
 const schema = {
@@ -70,7 +72,13 @@ input.addEventListener("change", (event) => {
 
       const result = type.decode(bytes, 0);
       const schem = result.value;
-      console.log(schem);
+      const world = []
+      for(const chunk of schem.chunks){
+        const blocks = expandChunk(chunk)
+        world.push(...blocks)
+      }
+
+      console.log(world);
     } catch (e) {
       console.error(e);
     }

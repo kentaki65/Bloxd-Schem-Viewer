@@ -1,0 +1,31 @@
+name: Convert Schematics to JSON
+
+on:
+  push:
+    branches:
+      - main  # main ブランチに push されたときに実行
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: コードをチェックアウト
+        uses: actions/checkout@v3
+
+      - name: Node.js をセットアップ
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: パッケージをインストール
+        run: npm ci
+
+      - name: schem を JSON に変換
+        run: node scripts/convertSchematics.js
+
+      - name: Pages に反映
+        uses: peaceiris/actions-gh-pages@v7
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public

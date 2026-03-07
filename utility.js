@@ -1,3 +1,4 @@
+const chunkSize = 16;
 export function readVarInt(buf, offsetObj){
   let num = 0;
   let shift = 0;
@@ -27,14 +28,14 @@ export function expandChunk(chunk){
   const blocks = decodeChunkBlocks(chunk.blocks)
   const result = []
   let i = 0
-  for(let y=0;y<32;y++){
-    for(let z=0;z<32;z++){
-      for(let x=0;x<32;x++){
+  for(let y=0;y<chunkSize;y++){
+    for(let z=0;z<chunkSize;z++){
+      for(let x=0;x<chunkSize;x++){
         const block = blocks[i++]
         result.push({
-          x: chunk.x*32 + x,
-          y: chunk.y*32 + y,
-          z: chunk.z*32 + z,
+          x: chunk.x*chunkSize + x,
+          y: chunk.y*chunkSize + y,
+          z: chunk.z*chunkSize + z,
           block
         })
       }

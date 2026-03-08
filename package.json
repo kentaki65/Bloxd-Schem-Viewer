@@ -1,5 +1,5 @@
 {
-  "name": "bloxd schem loader",
+  "name": "bloxd_schem_loader",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {

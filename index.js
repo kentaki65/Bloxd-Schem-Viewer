@@ -1,6 +1,6 @@
 const express = require("express");
 const multer = require("multer");
-const bloxd = require("./parser.js");
+const bloxd = require("./public/parser.js");
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });

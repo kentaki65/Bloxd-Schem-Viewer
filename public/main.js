@@ -5,7 +5,11 @@ attached.onclick = () => input.click();
 
 input.addEventListener("change", async (event) => {
   const file = event.target.files[0];
-  if(!file) return;
+  if(!file){
+    console.warn("didn't find file");
+    console.log(file);
+    return;
+  };
 
   const form = new FormData();
   form.append("schem", file);

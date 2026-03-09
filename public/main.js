@@ -1,3 +1,4 @@
+console.log("loaded!");
 const input = document.getElementById("fileInput");
 const attached = document.getElementById("attached");
 attached.onclick = () => input.click();

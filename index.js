@@ -1,28 +1,24 @@
 const express = require("express");
 const multer = require("multer");
+const bloxd = require("./bloxd.js");
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 
-const PORT = process.env.PORT || 3000;
-
 app.use(express.static("public"));
-
-app.post("/upload", upload.single("schem"), (req, res) => {
-
+app.post("/upload", upload.single("schem"), async (req, res) => {
   if (!req.file) {
-    return res.status(400).json({ error: "No file uploaded" });
+    return res.status(400).json({ error: "no file" });
   }
 
-  const buffer = req.file.buffer;
-  console.log("received file:", buffer.length);
-
-  res.json({
-    success: true,
-    size: buffer.length
-  });
+  try {
+    const buffer = req.file.buffer;
+    const parsed = await bloxd.parseBloxdschem(buffer);
+    res.json(parsed);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "parse failed" });
+  }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(3000, () => console.log("Server started"));

@@ -176,22 +176,64 @@ const schema3 = avsc.Type.forSchema({
 	]
 })
 
-function parse(buffer){
-	const header = buffer.readUInt32LE(0);
-	let schema
-	if(header === 4){
-		schema = schema3
-	}else if(header === 1){
-		schema = schema2
-	}else{
-		schema = schema0
+function parse(buffer) {
+
+	console.log("========== BLOXDSCHEM DEBUG ==========")
+	console.log("file view", JSON.stringify(data, null, 2).slice(0,2000))
+	console.log("file size:", buffer.length)
+
+	// header
+	const header = buffer.readUInt32LE(0)
+	console.log("header:", header)
+	console.log("header raw:", buffer.slice(0,4))
+
+	// 最初と最後を見る
+	console.log("first 40 bytes:", buffer.slice(0,40))
+	console.log("last 40 bytes:", buffer.slice(-40))
+
+	const avroBuffer = buffer.slice(4)
+
+	console.log("avro size:", avroBuffer.length)
+
+	// schemaを順番に試す
+	const schemas = [
+		["schema3", schema3],
+		["schema2", schema2],
+		["schema1", schema1],
+		["schema0", schema0]
+	]
+
+	for (const [name, schema] of schemas) {
+
+		console.log("---- trying", name)
+
+		try {
+
+			const data = schema.fromBuffer(avroBuffer)
+
+			console.log(name, "SUCCESS")
+			console.log("keys:", Object.keys(data))
+
+			return convertTo3D(data)
+
+		} catch (e) {
+
+			console.log(name, "FAILED:", e.message)
+
+			try {
+				const data = schema.fromBuffer(avroBuffer, { noCheck:true })
+				console.log(name, "PARTIAL SUCCESS (noCheck)")
+				console.log("keys:", Object.keys(data))
+				console.log(data)
+			} catch (e2) {
+				console.log(name, "noCheck failed:", e2.message)
+			}
+		}
 	}
 
-	console.log(buffer.slice(-10))
-	const avroBuffer = buffer.slice(4, buffer.length - 10)
-	const avroJson = schema.fromBuffer(avroBuffer)
-	return convertTo3D(avroJson)
+	throw new Error("No schema matched")
 }
+
 function decodeBlocks(avroChunk) {
 	let i = 0
 	const blocks = []

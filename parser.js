@@ -179,7 +179,6 @@ const schema3 = avsc.Type.forSchema({
 function parse(buffer) {
 
 	console.log("========== BLOXDSCHEM DEBUG ==========")
-	console.log("file view", JSON.stringify(data, null, 2).slice(0,2000))
 	console.log("file size:", buffer.length)
 
 	// header
@@ -210,9 +209,10 @@ function parse(buffer) {
 		try {
 
 			const data = schema.fromBuffer(avroBuffer)
-
+			
 			console.log(name, "SUCCESS")
 			console.log("keys:", Object.keys(data))
+			console.log("file view", JSON.stringify(data, null, 2).slice(0,2000))
 
 			return convertTo3D(data)
 

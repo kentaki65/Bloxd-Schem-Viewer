@@ -177,18 +177,21 @@ const schema3 = avsc.Type.forSchema({
 })
 
 function parse(buffer){
-	const header = buffer.readUInt32LE(0)
+	const header = buffer.readUInt32LE(0);
+	let schema
 	if(header === 4){
-		return convertTo3D(schema3.fromBuffer(buffer.slice(4)))
+		schema = schema3
+	}else if(header === 1){
+		schema = schema2
+	}else{
+		schema = schema0
 	}
-	if(header === 1){
-		return convertTo3D(schema2.fromBuffer(buffer.slice(4)))
-	}
-	console.log(schema3.fromBuffer(buffer.slice(4), {wrapUnions:true}))
-	
-	return convertTo3D(schema0.fromBuffer(buffer.slice(4)))
-}
 
+	console.log(buffer.slice(-10))
+	const avroBuffer = buffer.slice(4, buffer.length - 2)
+	const avroJson = schema.fromBuffer(avroBuffer)
+	return convertTo3D(avroJson)
+}
 function decodeBlocks(avroChunk) {
 	let i = 0
 	const blocks = []

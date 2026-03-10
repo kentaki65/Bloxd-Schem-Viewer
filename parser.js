@@ -174,178 +174,80 @@ const schema3 = avsc.Type.forSchema({
 	]
 });
 
-const parse = function (buffer) {
-	console.log("parse start:", buffer.slice(0, 20));
-	let avroJson;
-	try {
-		avroJson = schema3.fromBuffer(buffer);
-		console.log("タイプ2")
-	} catch (e) {
-		try {
-			avroJson = schema2.fromBuffer(buffer);
-			console.log("タイプ1");
-		} catch (e) {
-			avroJson = schema1.fromBuffer(buffer);
-			console.log("タイプ0");
-			try{
-				avroJson = schema0.fromBuffer(buffer);
-				console.log("タイプ4");
-			}catch(e){
-				console.log("解析完全失敗");
-			}
+function parse(buffer){
+
+ const header = buffer.readUInt32LE(0)
+ let schema
+
+ switch(header){
+  case 4:
+   schema = schema3
+   break
+  case 1:
+   schema = schema2
+   break
+  default:
+   schema = schema0
+ }
+
+ const tap = new avsc.utils.Tap(buffer);
+ const avroJson = schema._read(tap);
+ return convertTo3D(avroJson);
+}
+
+function decodeBlocks(avroChunk) {
+	let i = 0
+	const blocks = []
+	function decodeLEB128() {
+		let shift = 0
+		let value = 0
+
+		while (true) {
+			const byte = avroChunk.blocks[i++]
+			value |= (byte & 127) << shift
+			shift += 7
+			if ((byte & 128) === 0) break
+		}
+		return value
+	}
+	while (i < avroChunk.blocks.length) {
+		const amount = decodeLEB128()
+		const id = decodeLEB128()
+		for (let j = 0; j < amount; j++) {
+			blocks.push(id)
 		}
 	}
-	console.log(avroJson);
-	const json = {
+
+	return blocks
+}
+
+function convertTo3D(avroJson) {
+	const result = {
 		name: avroJson.name,
-		pos: [avroJson.x, avroJson.y, avroJson.z],
 		size: [avroJson.sizeX, avroJson.sizeY, avroJson.sizeZ],
-		chunks: []
-	};
-	for (const avroChunk of avroJson.chunks) {
-		const chunk = {
-			pos: [avroChunk.x, avroChunk.y, avroChunk.z],
-			blocks: []
-		};
-
-		let avroI = 0;
-		function decodeLEB128() {
-			let shift = 0;
-			let value = 0;
-
-			while (true) {
-				const byte = avroChunk.blocks[avroI++];
-				value |= (byte & 127) << shift;
-				shift += 7;
-				if ((byte & 128) !== 128) {
-					break;
+		blocks: []
+	}
+	for (const chunk of avroJson.chunks) {
+		const decoded = decodeBlocks(chunk)
+		let i = 0
+		for (let y = 0; y < 16; y++) {
+			for (let z = 0; z < 16; z++) {
+				for (let x = 0; x < 16; x++) {
+					const id = decoded[i++]
+					if (id === 0) continue
+					result.blocks.push({
+						x: chunk.x + x,
+						y: chunk.y + y,
+						z: chunk.z + z,
+						id
+					})
 				}
 			}
-			return value;
 		}
-		while (avroI < avroChunk.blocks.length) {
-			const amount = decodeLEB128();
-			const id = decodeLEB128();
-			for (let i = 0; i < amount; i++) {
-				chunk.blocks.push(id);
-			}
-		}
-
-		json.chunks.push(chunk);
 	}
-
-	return json;
+	return result
 }
-
-const splitBloxdschem = function (json) {
-	const schems = [];
-	const zySize = Math.ceil(json.sizeY / 32) * Math.ceil(json.sizeZ / 32);
-	const sliceSize = Math.floor(200 / zySize);
-	let currOffset = 0;
-	while (true) {
-		const chunksSlice = json.chunks.splice(0, zySize * sliceSize);
-		if (!chunksSlice.length) break;
-
-		chunksSlice.map(chunk => chunk.x -= currOffset);
-
-		schems.push({
-			name: json.name,
-			x: 0,
-			y: 0,
-			z: 0,
-			//maybe shorter for final?
-			sizeX: Math.min(json.sizeX, sliceSize * 32),
-			sizeY: json.sizeY,
-			sizeZ: json.sizeZ,
-			chunks: chunksSlice
-		})
-		currOffset += sliceSize;
-	}
-	return {
-		schems: schems,
-		sliceSize: sliceSize
-	};
-}
-const write = function (json) {
-	const avroJson = {
-		name: json.name,
-		x: 0,
-		y: 0,
-		z: 0,
-		sizeX: 0,
-		sizeY: 0,
-		sizeZ: 0,
-		chunks: [],
-		filler: 0
-	};
-	function encodeLEB128(value) {
-		const bytes = new Array();
-		while ((value & -128) != 0) {
-			let schemId = value & 127 | 128;
-			bytes.push(schemId);
-			value >>>= 7;
-		}
-		bytes.push(value);
-		return bytes;
-	}
-
-	[
-		avroJson.x,
-		avroJson.y,
-		avroJson.z
-	] = json.pos;
-	[
-		avroJson.sizeX,
-		avroJson.sizeY,
-		avroJson.sizeZ,
-	] = json.size;
-
-	//chunk run length encoding + leb128
-	for (let chunkI = 0; chunkI < json.chunks.length; chunkI++) {
-		const chunk = json.chunks[chunkI];
-		const avroChunk = {};
-		const RLEArray = [];
-
-		let currId = chunk.blocks[0];
-		let currAmt = 1;
-
-		for (let i = 1; i <= chunk.blocks.length; i++) {
-			const id = chunk.blocks[i];
-			if (id === currId) {
-				currAmt++;
-			} else {
-				RLEArray.push(...encodeLEB128(currAmt));
-				RLEArray.push(...encodeLEB128(currId));
-				currAmt = 1;
-				currId = id;
-			}
-		}
-
-		[
-			avroChunk.x,
-			avroChunk.y,
-			avroChunk.z
-		] = chunk.pos;
-		avroChunk.blocks = Buffer.from(RLEArray);
-
-		avroJson.chunks.push(avroChunk);
-	}
-
-	const {
-		schems: splitJsons,
-		sliceSize
-	} = splitBloxdschem(avroJson);
-	const bins = [];
-	for (const json of splitJsons) {
-		bins.push(schema0.toBuffer(json));
-	}
-	return {
-		schems: bins,
-		sliceSize: sliceSize * 32
-	};
-};
 
 module.exports = {
 	parseBloxdschem: parse,
-	writeBloxdschem: write
 }

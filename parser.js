@@ -124,11 +124,11 @@ const schema2 = avsc.Type.forSchema({
 		{ name: "globalZ", type: "int" }
 	]
 });
+
 const schema3 = avsc.Type.forSchema({
 	type: "record",
 	name: "Schematic",
 	fields: [
-		{ name: 'headers', type: { type: 'fixed', size: 4 }, default: "\u{4}\u{0}\u{0}\u{0}" },
 		{ name: "name", type: "string" },
 		{ name: "x", type: "int" },
 		{ name: "y", type: "int" },
@@ -136,6 +136,7 @@ const schema3 = avsc.Type.forSchema({
 		{ name: "sizeX", type: "int" },
 		{ name: "sizeY", type: "int" },
 		{ name: "sizeZ", type: "int" },
+
 		{
 			name: "chunks",
 			type: {
@@ -151,6 +152,7 @@ const schema3 = avsc.Type.forSchema({
 				}
 			}
 		},
+
 		{
 			name: "blockdatas",
 			type: {
@@ -167,27 +169,24 @@ const schema3 = avsc.Type.forSchema({
 			},
 			default: []
 		},
+
 		{ name: "globalX", type: "int", default: 0 },
 		{ name: "globalY", type: "int", default: 0 },
-		{ name: "globalZ", type: "int", default: 0 },
-		{ name: 'wtvthisis', type: { type: 'fixed', size: 2 }, default: "\u{0}\u{0}" },
+		{ name: "globalZ", type: "int", default: 0 }
 	]
-});
+})
 
 function parse(buffer){
 	const header = buffer.readUInt32LE(0)
-	let schema
 	if(header === 4){
-		schema = schema3
-	}else if(header === 1){
-		schema = schema2
-	}else{
-		schema = schema0
+		return convertTo3D(schema3.fromBuffer(buffer.slice(4)))
 	}
-
-	const avroJson = schema.fromBuffer(buffer.slice(4));
-	console.log("after slice:", buffer.slice(4,40));
-	return convertTo3D(avroJson)
+	if(header === 1){
+		return convertTo3D(schema2.fromBuffer(buffer.slice(4)))
+	}
+	console.log(schema3.fromBuffer(buffer.slice(4), {wrapUnions:true}))
+	
+	return convertTo3D(schema0.fromBuffer(buffer.slice(4)))
 }
 
 function decodeBlocks(avroChunk) {

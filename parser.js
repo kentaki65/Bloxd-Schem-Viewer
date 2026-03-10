@@ -174,25 +174,32 @@ const schema3 = avsc.Type.forSchema({
 	]
 });
 
-function parse(buffer){
+function parse(buffer) {
+	try {
+		const data = schema3.fromBuffer(buffer);
+		console.log("schema3");
+		return convertTo3D(data);
+	} catch {}
 
- const header = buffer.readUInt32LE(0)
- let schema
+	try {
+		const data = schema2.fromBuffer(buffer);
+		console.log("schema2");
+		return convertTo3D(data);
+	} catch {}
 
- switch(header){
-  case 4:
-   schema = schema3
-   break
-  case 1:
-   schema = schema2
-   break
-  default:
-   schema = schema0
- }
+	try {
+		const data = schema1.fromBuffer(buffer);
+		console.log("schema1");
+		return convertTo3D(data);
+	} catch {}
 
- const tap = new avsc.utils.Tap(buffer);
- const avroJson = schema._read(tap);
- return convertTo3D(avroJson);
+	try {
+		const data = schema0.fromBuffer(buffer);
+		console.log("schema0");
+		return convertTo3D(data);
+	} catch {}
+
+	throw new Error("Unknown bloxdschem format");
 }
 
 function decodeBlocks(avroChunk) {

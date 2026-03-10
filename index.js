@@ -13,6 +13,10 @@ app.post("/upload", upload.single("schem"), async (req, res) => {
 
   try {
     const buffer = req.file.buffer;
+    console.log("log: ", buffer);
+    console.log("file size:", buffer.length);
+    console.log("header:", buffer.slice(0,4));
+     
     const parsed = bloxd.parseBloxdschem(buffer);
     res.json(parsed);
   } catch (err) {

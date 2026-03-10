@@ -208,8 +208,7 @@ function parse(buffer) {
 
 		try {
 
-			const data = schema.fromBuffer(avroBuffer)
-			
+			const data = schema.fromBuffer(avroBuffer, undefined, true);
 			console.log(name, "SUCCESS")
 			console.log("keys:", Object.keys(data))
 
@@ -218,7 +217,12 @@ function parse(buffer) {
 		} catch (e) {
 
 			console.log(name, "FAILED:", e.message)
-
+			console.log(
+				buffer.slice(4, 200)
+			)
+			console.log(
+				buffer.toString("utf8", buffer.length-200)
+			)
 			try {
 				const data = schema.fromBuffer(avroBuffer, { noCheck:true })
 				console.log(name, "PARTIAL SUCCESS (noCheck)")

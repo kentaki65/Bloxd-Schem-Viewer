@@ -124,19 +124,75 @@ const schema2 = avsc.Type.forSchema({
 		{ name: "globalZ", type: "int" }
 	]
 });
+const schema3 = avsc.Type.forSchema({
+	type: "record",
+	name: "Schematic",
+	fields: [
+		{ name: 'headers', type: { type: 'fixed', size: 4 }, default: "\u{4}\u{0}\u{0}\u{0}" },
+		{ name: "name", type: "string" },
+		{ name: "x", type: "int" },
+		{ name: "y", type: "int" },
+		{ name: "z", type: "int" },
+		{ name: "sizeX", type: "int" },
+		{ name: "sizeY", type: "int" },
+		{ name: "sizeZ", type: "int" },
+		{
+			name: "chunks",
+			type: {
+				type: "array",
+				items: {
+					type: "record",
+					fields: [
+						{ name: "x", type: "int" },
+						{ name: "y", type: "int" },
+						{ name: "z", type: "int" },
+						{ name: "blocks", type: "bytes" }
+					]
+				}
+			}
+		},
+		{
+			name: "blockdatas",
+			type: {
+				type: "array",
+				items: {
+					type: "record",
+					fields: [
+						{ name: "blockX", type: "int" },
+						{ name: "blockY", type: "int" },
+						{ name: "blockZ", type: "int" },
+						{ name: "blockdataStr", type: "string" }
+					]
+				}
+			},
+			default: []
+		},
+		{ name: "globalX", type: "int", default: 0 },
+		{ name: "globalY", type: "int", default: 0 },
+		{ name: "globalZ", type: "int", default: 0 },
+		{ name: 'wtvthisis', type: { type: 'fixed', size: 2 }, default: "\u{0}\u{0}" },
+	]
+});
 
 const parse = function (buffer) {
+	console.log("parse start:", buffer.slice(0, 20));
 	let avroJson;
 	try {
-		avroJson = schema2.fromBuffer(buffer);
+		avroJson = schema3.fromBuffer(buffer);
 		console.log("タイプ2")
-	} catch(e) {
+	} catch (e) {
 		try {
-			avroJson = schema1.fromBuffer(buffer);
+			avroJson = schema2.fromBuffer(buffer);
 			console.log("タイプ1");
-		} catch(e) {
-			avroJson = schema0.fromBuffer(buffer);
+		} catch (e) {
+			avroJson = schema1.fromBuffer(buffer);
 			console.log("タイプ0");
+			try{
+				avroJson = schema0.fromBuffer(buffer);
+				console.log("タイプ4");
+			}catch(e){
+				console.log("解析完全失敗");
+			}
 		}
 	}
 	console.log(avroJson);

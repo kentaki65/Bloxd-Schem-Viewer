@@ -11,17 +11,23 @@ app.post("/upload", upload.single("schem"), async (req, res) => {
     return res.status(400).json({ error: "no file" });
   }
 
+  let buffer = req.file.buffer;
+  console.log("log: ", buffer);
+  console.log("file size:", buffer.length);
+  console.log("header:", buffer.slice(0,4));
+  
   try {
-    const buffer = req.file.buffer;
-    console.log("log: ", buffer);
-    console.log("file size:", buffer.length);
-    console.log("header:", buffer.slice(0,4));
-     
     const parsed = bloxd.parseBloxdschem(buffer);
     res.json(parsed);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "parse failed" });
+    try{
+      buffer = buffer.slice(4);
+      const parsed = bloxd.parseBloxdschem(buffer);
+      res.json(parsed);
+    }catch(e){ 
+      console.error(err);
+      res.status(500).json({ error: "parse failed" });
+    }
   }
 });
 

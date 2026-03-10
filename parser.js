@@ -212,7 +212,6 @@ function parse(buffer) {
 			
 			console.log(name, "SUCCESS")
 			console.log("keys:", Object.keys(data))
-			console.log("file view", JSON.stringify(data, null, 2).slice(0,2000))
 
 			return convertTo3D(data)
 

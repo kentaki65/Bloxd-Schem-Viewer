@@ -188,7 +188,7 @@ function parse(buffer){
 	}
 
 	console.log(buffer.slice(-10))
-	const avroBuffer = buffer.slice(4, buffer.length - 2)
+	const avroBuffer = buffer.slice(4, buffer.length - 10)
 	const avroJson = schema.fromBuffer(avroBuffer)
 	return convertTo3D(avroJson)
 }

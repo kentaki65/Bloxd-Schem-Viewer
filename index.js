@@ -1,6 +1,6 @@
 const express = require("express");
 const multer = require("multer");
-const bloxd = require("./public/parser.js");
+const bloxd = require("./parser.js");
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -13,7 +13,7 @@ app.post("/upload", upload.single("schem"), async (req, res) => {
 
   try {
     const buffer = req.file.buffer;
-    const parsed = await bloxd.parseBloxdschem(buffer);
+    const parsed = bloxd.parseBloxdschem(buffer);
     res.json(parsed);
   } catch (err) {
     console.error(err);

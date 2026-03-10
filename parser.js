@@ -129,13 +129,17 @@ const parse = function (buffer) {
 	let avroJson;
 	try {
 		avroJson = schema2.fromBuffer(buffer);
+		console.log("タイプ2")
 	} catch {
 		try {
 			avroJson = schema1.fromBuffer(buffer);
+			console.log("タイプ1");
 		} catch {
 			avroJson = schema0.fromBuffer(buffer);
+			console.log("タイプ0");
 		}
 	}
+	console.log(avroJson);
 	const json = {
 		name: avroJson.name,
 		pos: [avroJson.x, avroJson.y, avroJson.z],

@@ -1,4 +1,5 @@
-console.log("loaded!");
+import { draw } from "./renderer.js";
+
 const input = document.getElementById("fileInput");
 const attached = document.getElementById("attached");
 attached.onclick = () => input.click();
@@ -21,5 +22,6 @@ input.addEventListener("change", async (event) => {
   });
 
   const json = await res.json();
-  console.log(json);
+  console.log(Object.keys(json));
+  draw(json.blocks);
 });

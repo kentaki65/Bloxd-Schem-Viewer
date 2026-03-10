@@ -3,6 +3,7 @@
 //Read and write .bloxdschem files, mainly using avsc
 const { Buffer } = require("buffer");
 const avsc = require("avsc");
+const { decode } = require("punycode");
 
 const schema0 = avsc.Type.forSchema({
 	type: "record",
@@ -272,6 +273,8 @@ function convertTo3D(avroJson) {
 	}
 	for (const chunk of avroJson.chunks) {
 		const decoded = decodeBlocks(chunk)
+		console.log("decoded length", decoded.length);
+		
 		let i = 0
 		for (let y = 0; y < chunkSize; y++) {
 			for (let z = 0; z < chunkSize; z++) {
@@ -279,9 +282,9 @@ function convertTo3D(avroJson) {
 					const id = decoded[i++]
 					if (id === 0) continue
 					result.blocks.push({
-						x: chunk.x + x,
-						y: chunk.y + y,
-						z: chunk.z + z,
+						x: chunk.x * chunkSize + x,
+						y: chunk.y * chunkSize + y,
+						z: chunk.z * chunkSize + z,
 						id
 					})
 				}

@@ -48,26 +48,49 @@ scene.add(axes);
 const grid = new THREE.GridHelper(50, 50);
 scene.add(grid);
 
+function getBounds(blocks){
+  let minX = Infinity;
+  let minY = Infinity;
+  let minZ = Infinity;
+
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  let maxZ = -Infinity;
+
+  for(const b of blocks){
+    if(b.x < minX) minX = b.x;
+    if(b.y < minY) minY = b.y;
+    if(b.z < minZ) minZ = b.z;
+
+    if(b.x > maxX) maxX = b.x;
+    if(b.y > maxY) maxY = b.y;
+    if(b.z > maxZ) maxZ = b.z;
+  }
+
+  return {minX, minY, minZ, maxX, maxY, maxZ};
+}
+
 export function draw(blocks){
+  const {minX, minY, minZ, maxX, maxY, maxZ} = getBounds(blocks);
+  const centerX = (minX + maxX) / 2;
+  const centerY = (minY + maxY) / 2;
+  const centerZ = (minZ + maxZ) / 2;
+
   for (const b of blocks) {
-
     const cube = new THREE.Mesh(geometry, material);
-
     cube.position.set(
-      b.x,
-      b.y,
-      b.z
+      b.x - centerX + 0.5,
+      b.y - centerY + 0.5,
+      b.z - centerZ + 0.5
     );
-
     scene.add(cube);
   }
 }
 
-
 // render loop
 function animate(){
   requestAnimationFrame(animate);
-  controls.update(); // ←これ重要
+  controls.update();
   renderer.render(scene, camera);
 }
 

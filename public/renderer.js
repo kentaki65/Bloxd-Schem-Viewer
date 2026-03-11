@@ -90,11 +90,14 @@ export function draw(blocks){
   for (const b of blocks) {
 
     const cube = new THREE.Mesh(geometry, material);
+    const x = b.x - centerX + 0.5;
+    const y = b.y - centerY + 0.5;
+    const z = b.z - centerZ + 0.5;
 
     cube.position.set(
-      b.x - centerX + 0.5,
-      b.y - centerY + 0.5,
-      -(b.z - centerZ + 0.5)
+      z,
+      y,
+      -x
     );
     structure.add(cube);
   }

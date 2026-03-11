@@ -265,32 +265,23 @@ function decodeBlocks(avroChunk) {
 }
 
 function convertTo3D(avroJson) {
-
 	const chunkSize = 32
-
 	const result = {
 		name: avroJson.name,
 		size: [avroJson.sizeX, avroJson.sizeY, avroJson.sizeZ],
 		blocks: []
 	}
-
 	for (const chunk of avroJson.chunks) {
-
 		const decoded = decodeBlocks(chunk)
-
 		let i = 0
-
 		for (let y = 0; y < chunkSize; y++) {
 			for (let z = 0; z < chunkSize; z++) {
 				for (let x = 0; x < chunkSize; x++) {
-
 					const id = decoded[i++]
 					if (id === 0) continue
-
 					const wx = chunk.x * chunkSize + x
 					const wy = chunk.y * chunkSize + y
 					const wz = chunk.z * chunkSize + z
-
 					result.blocks.push({
 						x: wx,
 						y: wy,
@@ -301,7 +292,6 @@ function convertTo3D(avroJson) {
 			}
 		}
 	}
-
 	return result
 }
 module.exports = {

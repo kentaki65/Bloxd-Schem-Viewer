@@ -87,6 +87,8 @@ export function draw(blocks){
   const centerX = minX + sizeX / 2;
   const centerY = minY + sizeY / 2;
   const centerZ = minZ + sizeZ / 2;
+  const heightOffset = sizeZ / 2;
+
   structure.add(new THREE.AxesHelper(20));
 
   for (const b of blocks) {
@@ -98,7 +100,7 @@ export function draw(blocks){
 
     cube.position.set(
       x,
-      z,
+      z + heightOffset,
       -y
     );
     structure.add(cube);

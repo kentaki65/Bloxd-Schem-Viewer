@@ -265,35 +265,53 @@ function decodeBlocks(avroChunk) {
 }
 
 function convertTo3D(avroJson) {
-	const chunkSize = 32;
+
+	const chunkSize = 32
+
 	const result = {
 		name: avroJson.name,
 		size: [avroJson.sizeX, avroJson.sizeY, avroJson.sizeZ],
 		blocks: []
 	}
+
 	for (const chunk of avroJson.chunks) {
+
 		const decoded = decodeBlocks(chunk)
-		console.log("decoded length", decoded.length);
-		
+		console.log("decoded length", decoded.length)
+
 		let i = 0
+
 		for (let y = 0; y < chunkSize; y++) {
 			for (let z = 0; z < chunkSize; z++) {
 				for (let x = 0; x < chunkSize; x++) {
+
 					const id = decoded[i++]
 					if (id === 0) continue
+
+					const wx = chunk.x * chunkSize + x - avroJson.x
+					const wy = chunk.y * chunkSize + y - avroJson.y
+					const wz = chunk.z * chunkSize + z - avroJson.z
+
+					if (
+						wx < 0 || wy < 0 || wz < 0 ||
+						wx >= avroJson.sizeX ||
+						wy >= avroJson.sizeY ||
+						wz >= avroJson.sizeZ
+					) continue
+
 					result.blocks.push({
-						x: chunk.x * chunkSize + x,
-						y: chunk.y * chunkSize + y,
-						z: chunk.z * chunkSize + z,
+						x: wx,
+						y: wy,
+						z: wz,
 						id
 					})
+
 				}
 			}
 		}
 	}
 	return result
 }
-
 module.exports = {
 	parseBloxdschem: parse,
 }

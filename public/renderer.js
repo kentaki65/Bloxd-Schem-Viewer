@@ -87,6 +87,7 @@ export function draw(blocks){
   const centerX = minX + sizeX / 2;
   const centerY = minY + sizeY / 2;
   const centerZ = minZ + sizeZ / 2;
+  structure.add(new THREE.AxesHelper(20));
 
   for (const b of blocks) {
 
@@ -104,12 +105,43 @@ export function draw(blocks){
   }
 }
 
+const axesScene = new THREE.Scene();
+const axesCamera = new THREE.PerspectiveCamera(
+  50,
+  1,
+  0.1,
+  10
+);
+axesCamera.position.set(2,2,2);
+axesCamera.lookAt(0,0,0);
+const axesHelper = new THREE.AxesHelper(1.5);
+
+axesScene.add(axesHelper);
+window.addEventListener("keydown", (e) => {
+  const step = Math.PI / 16;
+  if (e.key === "x") {
+    structure.rotation.x += step;
+  }
+  if (e.key === "y") {
+    structure.rotation.y += step;
+  }
+  if (e.key === "z") {
+    structure.rotation.z += step;
+  }
+});
 
 // render loop
 function animate() {
   requestAnimationFrame(animate);
   controls.update();
-  renderer.render(scene, camera);
-}
 
+  renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
+  renderer.render(scene, camera);
+
+  renderer.autoClear = false;
+  renderer.clearDepth();
+
+  renderer.setViewport(10, window.innerHeight - 110, 100, 100);
+  renderer.render(axesScene, axesCamera);
+}
 animate();

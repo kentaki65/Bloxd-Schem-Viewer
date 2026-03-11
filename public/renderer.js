@@ -95,11 +95,7 @@ export function draw(data){
     const y = b.y - centerY + 0.5;
     const z = b.z - centerZ + 0.5;
 
-    cube.position.set(
-      x,
-      y,
-      z
-    );
+    cube.position.set(x, z, -y);
     structure.add(cube);
   }
   structure.rotation.x = -Math.PI / 2;

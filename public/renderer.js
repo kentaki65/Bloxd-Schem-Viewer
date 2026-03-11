@@ -98,7 +98,6 @@ export function draw(data){
     cube.position.set(x, z, -y);
     structure.add(cube);
   }
-  structure.rotation.x = -Math.PI / 2;
 }
 
 const axesScene = new THREE.Scene();

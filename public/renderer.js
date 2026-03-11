@@ -81,7 +81,7 @@ function getBounds(blocks) {
 
 export function draw(data){
   structure.clear();
-  
+
   const { blocks } = data;
   const {minX, minY, minZ, sizeX, sizeY, sizeZ} = getBounds(blocks);
   const centerX = minX + sizeX / 2;
@@ -102,6 +102,7 @@ export function draw(data){
     );
     structure.add(cube);
   }
+  structure.rotation.x = -Math.PI / 2;
 }
 
 const axesScene = new THREE.Scene();

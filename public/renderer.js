@@ -81,18 +81,15 @@ function getBounds(blocks) {
 
 export function draw(data){
   structure.clear();
+  
   const { blocks } = data;
   const {minX, minY, minZ, sizeX, sizeY, sizeZ} = getBounds(blocks);
-
   const centerX = minX + sizeX / 2;
   const centerY = minY + sizeY / 2;
   const centerZ = minZ + sizeZ / 2;
-  const heightOffset = sizeZ / 2;
 
   structure.add(new THREE.AxesHelper(20));
-
   for (const b of blocks) {
-
     const cube = new THREE.Mesh(geometry, material);
     const x = b.x - centerX + 0.5;
     const y = b.y - centerY + 0.5;
@@ -100,8 +97,8 @@ export function draw(data){
 
     cube.position.set(
       x,
-      z + heightOffset,
-      -y
+      y,
+      z
     );
     structure.add(cube);
   }

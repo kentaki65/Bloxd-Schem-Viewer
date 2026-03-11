@@ -43,17 +43,17 @@ const material = new THREE.MeshStandardMaterial({
 });
 
 
-export function draw(blocks){
+export function draw(blocks, sizeX, sizeY, sizeZ){
+  const offsetX = sizeX / 2;
+  const offsetY = sizeY / 2;
+  const offsetZ = sizeZ / 2;
   for (const b of blocks) {
-
     const cube = new THREE.Mesh(geometry, material);
-
     cube.position.set(
-      b.x,
-      b.y,
-      b.z
+      b.x - offsetX,
+      b.y - offsetY,
+      -(b.z - offsetZ)
     );
-
     scene.add(cube);
   }
 }

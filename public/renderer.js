@@ -97,9 +97,9 @@ export function draw(blocks){
     const z = b.z - centerZ + 0.5;
 
     cube.position.set(
-      -x,
-      y,
-      z
+      x,
+      z,
+      -y
     );
     structure.add(cube);
   }

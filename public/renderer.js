@@ -13,46 +13,55 @@ const camera = new THREE.PerspectiveCamera(
 
 camera.position.set(40, 40, 40);
 
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 const viewer = document.getElementById("view");
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 viewer.appendChild(renderer.domElement);
 
 
-// マウス操作
+// controls
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(0, 0, 0);
 controls.update();
 
 
-// ライト
+// lights
 const light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.set(1, 1, 1);
-
 scene.add(light);
+
 scene.add(new THREE.AmbientLight(0xffffff, 0.4));
 
 
-// 共有ジオメトリ
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-
-// 共有マテリアル
-const material = new THREE.MeshStandardMaterial({
-  color: 0xcccccc
-});
-
+// helpers
 const axes = new THREE.AxesHelper(20);
 scene.add(axes);
 
 const grid = new THREE.GridHelper(50, 50);
 scene.add(grid);
 
+
+// shared geometry/material
+const geometry = new THREE.BoxGeometry(1.001, 1.001, 1.001);
+
+const material = new THREE.MeshStandardMaterial({
+  color: 0xcccccc
+});
+
+
+// ブロック格納用
+const structure = new THREE.Group();
+scene.add(structure);
+
+
 function getBounds(blocks) {
+
   let minX = Infinity, minY = Infinity, minZ = Infinity;
   let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
 
   for (const b of blocks) {
+
     if (b.x < minX) minX = b.x;
     if (b.y < minY) minY = b.y;
     if (b.z < minZ) minZ = b.z;
@@ -68,6 +77,7 @@ function getBounds(blocks) {
 
   return { minX, minY, minZ, sizeX, sizeY, sizeZ };
 }
+
 
 export function draw(blocks){
 
@@ -87,9 +97,14 @@ export function draw(blocks){
       b.z - centerZ + 0.5
     );
 
-    scene.add(cube);
+    structure.add(cube);
   }
+
+  // 必要ならここで回転
+  // structure.rotation.y = Math.PI / 2;
 }
+
+
 // render loop
 function animate() {
   requestAnimationFrame(animate);

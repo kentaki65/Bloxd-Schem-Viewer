@@ -275,8 +275,8 @@ function convertTo3D(avroJson) {
 		const decoded = decodeBlocks(chunk)
 		let i = 0
 		for (let y = 0; y < chunkSize; y++) {
-			for (let z = 0; z < chunkSize; z++) {
-				for (let x = 0; x < chunkSize; x++) {
+			for (let z = 0; x < chunkSize; z++) {
+				for (let x = 0; z < chunkSize; x++) {
 
 					const id = decoded[i++]
 					if (id === 0) continue

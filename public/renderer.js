@@ -94,11 +94,10 @@ export function draw(blocks){
     cube.position.set(
       b.x - centerX + 0.5,
       b.y - centerY + 0.5,
-      b.z - centerZ + 0.5
+      -(b.z - centerZ + 0.5)
     );
     structure.add(cube);
   }
-  structure.rotation.y = Math.PI / 2;
 }
 
 

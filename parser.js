@@ -269,7 +269,10 @@ function convertTo3D(avroJson) {
 	const result = {
 		name: avroJson.name,
 		size: [avroJson.sizeX, avroJson.sizeY, avroJson.sizeZ],
-		blocks: []
+		blocks: [],
+		globalX: avroJson.globalX,
+		globalY: avroJson.globalY,
+		globalZ: avroJson.globalZ,
 	}
 	for (const chunk of avroJson.chunks) {
 		const decoded = decodeBlocks(chunk)

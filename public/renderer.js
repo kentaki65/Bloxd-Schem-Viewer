@@ -48,6 +48,8 @@ scene.add(axes);
 const grid = new THREE.GridHelper(50, 50);
 scene.add(grid);
 
+const CHUNK = 32;
+
 function getBounds(blocks){
   let minX = Infinity, minY = Infinity, minZ = Infinity;
   let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
@@ -70,6 +72,7 @@ function getBounds(blocks){
 }
 
 export function draw(blocks){
+
   const {minX, minY, minZ, sizeX, sizeY, sizeZ} = getBounds(blocks);
 
   const offsetX = sizeX / 2;
@@ -77,16 +80,22 @@ export function draw(blocks){
   const offsetZ = sizeZ / 2;
 
   for (const b of blocks) {
+
     const cube = new THREE.Mesh(geometry, material);
+
+    const worldX = b.x + (b.chunkX || 0) * CHUNK;
+    const worldY = b.y + (b.chunkY || 0) * CHUNK;
+    const worldZ = b.z + (b.chunkZ || 0) * CHUNK;
+
     cube.position.set(
-      (b.x - minX) - offsetX,
-      (b.z - minZ) - offsetZ,
-      -((b.y - minY) - offsetY)
+      (worldX - minX + 0.5) - offsetX,
+      (worldZ - minZ + 0.5) - offsetZ,
+      -((worldY - minY + 0.5) - offsetY)
     );
+
     scene.add(cube);
   }
 }
-
 // render loop
 function animate(){
   requestAnimationFrame(animate);

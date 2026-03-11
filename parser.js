@@ -185,10 +185,10 @@ function parse(buffer) {
 	// header
 	const header = buffer.readUInt32LE(0)
 	console.log("header:", header)
-	console.log("header raw:", buffer.slice(0,4))
+	console.log("header raw:", buffer.slice(0, 4))
 
 	// 最初と最後を見る
-	console.log("first 40 bytes:", buffer.slice(0,40))
+	console.log("first 40 bytes:", buffer.slice(0, 40))
 	console.log("last 40 bytes:", buffer.slice(-40))
 
 	const avroBuffer = buffer.slice(4)
@@ -222,10 +222,10 @@ function parse(buffer) {
 				buffer.slice(4, 200)
 			)
 			console.log(
-				buffer.toString("utf8", buffer.length-200)
+				buffer.toString("utf8", buffer.length - 200)
 			)
 			try {
-				const data = schema.fromBuffer(avroBuffer, { noCheck:true })
+				const data = schema.fromBuffer(avroBuffer, { noCheck: true })
 				console.log(name, "PARTIAL SUCCESS (noCheck)")
 				console.log("keys:", Object.keys(data))
 				console.log(data)
@@ -265,22 +265,15 @@ function decodeBlocks(avroChunk) {
 }
 
 function convertTo3D(avroJson) {
-
 	const chunkSize = 32
-
 	const result = {
 		name: avroJson.name,
 		size: [avroJson.sizeX, avroJson.sizeY, avroJson.sizeZ],
 		blocks: []
 	}
-
 	for (const chunk of avroJson.chunks) {
-
 		const decoded = decodeBlocks(chunk)
-		console.log("decoded length", decoded.length)
-
 		let i = 0
-
 		for (let y = 0; y < chunkSize; y++) {
 			for (let z = 0; z < chunkSize; z++) {
 				for (let x = 0; x < chunkSize; x++) {
@@ -288,16 +281,9 @@ function convertTo3D(avroJson) {
 					const id = decoded[i++]
 					if (id === 0) continue
 
-					const wx = chunk.x * chunkSize + x - avroJson.x
-					const wy = chunk.y * chunkSize + y - avroJson.y
-					const wz = chunk.z * chunkSize + z - avroJson.z
-
-					if (
-						wx < 0 || wy < 0 || wz < 0 ||
-						wx >= avroJson.sizeX ||
-						wy >= avroJson.sizeY ||
-						wz >= avroJson.sizeZ
-					) continue
+					const wx = chunk.x * chunkSize + x
+					const wy = chunk.y * chunkSize + y
+					const wz = chunk.z * chunkSize + z
 
 					result.blocks.push({
 						x: wx,
@@ -305,13 +291,13 @@ function convertTo3D(avroJson) {
 						z: wz,
 						id
 					})
-
 				}
 			}
 		}
 	}
 	return result
 }
+
 module.exports = {
 	parseBloxdschem: parse,
 }

@@ -276,6 +276,8 @@ function convertTo3D(avroJson) {
 	}
 	for (const chunk of avroJson.chunks) {
 		const decoded = decodeBlocks(chunk)
+		console.log(decoded.length);
+
 		let i = 0
 		for (let y = 0; y < chunkSize; y++) {
 			for (let z = 0; z < chunkSize; z++) {
@@ -293,8 +295,17 @@ function convertTo3D(avroJson) {
 					})
 				}
 			}
-		}
+		}	
 	}
+	console.log(
+		Math.min(...result.blocks.map(b=>b.x)),
+		Math.max(...result.blocks.map(b=>b.x))
+	)
+
+	console.log(
+		Math.min(...result.blocks.map(b=>b.z)),
+		Math.max(...result.blocks.map(b=>b.z))
+	)
 	return result
 }
 module.exports = {

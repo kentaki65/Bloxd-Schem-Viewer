@@ -22,5 +22,6 @@ input.addEventListener("change", async (event) => {
   });
 
   const json = await res.json();
+  console.log(json);
   draw(json);
 });

@@ -81,6 +81,7 @@ function getBounds(blocks) {
 
 export function draw(blocks){
   structure.clear();
+  console.log(blocks[0])
   const {minX, minY, minZ, sizeX, sizeY, sizeZ} = getBounds(blocks);
 
   const centerX = minX + sizeX / 2;

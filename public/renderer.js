@@ -48,17 +48,17 @@ scene.add(axes);
 const grid = new THREE.GridHelper(50, 50);
 scene.add(grid);
 
-export function draw(blocks, sizeX, sizeY, sizeZ){
-  const offsetX = sizeX / 2;
-  const offsetY = sizeY / 2;
-  const offsetZ = sizeZ / 2;
+export function draw(blocks){
   for (const b of blocks) {
+
     const cube = new THREE.Mesh(geometry, material);
+
     cube.position.set(
-      b.x - offsetX,
-      b.y - offsetY,
-      -(b.z - offsetZ)
+      b.x,
+      b.y,
+      b.z
     );
+
     scene.add(cube);
   }
 }

@@ -97,7 +97,7 @@ export function draw(blocks){
     cube.position.set(
       x,
       y,
-      -z
+      z
     );
     structure.add(cube);
   }

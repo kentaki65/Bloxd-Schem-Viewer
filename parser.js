@@ -211,7 +211,7 @@ function parse(buffer) {
 
 			const data = schema.fromBuffer(avroBuffer, undefined, true);
 			console.log(name, "SUCCESS")
-			console.log("keys:", Object.keys(data))
+			console.log("data", data);
 
 			return convertTo3D(data)
 

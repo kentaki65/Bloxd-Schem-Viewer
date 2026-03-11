@@ -49,13 +49,8 @@ const grid = new THREE.GridHelper(50, 50);
 scene.add(grid);
 
 function getBounds(blocks){
-  let minX = Infinity;
-  let minY = Infinity;
-  let minZ = Infinity;
-
-  let maxX = -Infinity;
-  let maxY = -Infinity;
-  let maxZ = -Infinity;
+  let minX = Infinity, minY = Infinity, minZ = Infinity;
+  let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
 
   for(const b of blocks){
     if(b.x < minX) minX = b.x;
@@ -67,21 +62,26 @@ function getBounds(blocks){
     if(b.z > maxZ) maxZ = b.z;
   }
 
-  return {minX, minY, minZ, maxX, maxY, maxZ};
+  const sizeX = maxX - minX + 1;
+  const sizeY = maxY - minY + 1;
+  const sizeZ = maxZ - minZ + 1;
+
+  return {minX, minY, minZ, sizeX, sizeY, sizeZ};
 }
 
 export function draw(blocks){
-  const {minX, minY, minZ, maxX, maxY, maxZ} = getBounds(blocks);
-  const centerX = (minX + maxX) / 2;
-  const centerY = (minY + maxY) / 2;
-  const centerZ = (minZ + maxZ) / 2;
+  const {minX, minY, minZ, sizeX, sizeY, sizeZ} = getBounds(blocks);
+
+  const offsetX = sizeX / 2;
+  const offsetY = sizeY / 2;
+  const offsetZ = sizeZ / 2;
 
   for (const b of blocks) {
     const cube = new THREE.Mesh(geometry, material);
     cube.position.set(
-      b.x - centerX + 0.5,
-      b.y - centerY + 0.5,
-      b.z - centerZ + 0.5
+      (b.x - minX) - offsetX,
+      (b.z - minZ) - offsetZ,
+      -((b.y - minY) - offsetY)
     );
     scene.add(cube);
   }

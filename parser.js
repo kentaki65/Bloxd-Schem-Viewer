@@ -298,15 +298,17 @@ function convertTo3D(avroJson) {
 			}
 		}	
 	}
-console.log(
-  Math.min(...result.blocks.map(b=>b.x)),
-  Math.max(...result.blocks.map(b=>b.x))
-)
+	for (let i = 0; i < 40; i++) {
+		result.blocks.push({ x: i, y: 0, z: 0, id: 9991 })
+	}
 
-console.log(
-  Math.min(...result.blocks.map(b=>b.z)),
-  Math.max(...result.blocks.map(b=>b.z))
-)
+	for (let i = 0; i < 40; i++) {
+		result.blocks.push({ x: 0, y: i, z: 0, id: 9992 })
+	}
+
+	for (let i = 0; i < 40; i++) {
+		result.blocks.push({ x: 0, y: 0, z: i, id: 9993 })
+	}
 	return result
 }
 module.exports = {

@@ -42,6 +42,11 @@ const material = new THREE.MeshStandardMaterial({
   color: 0xcccccc
 });
 
+const axes = new THREE.AxesHelper(20);
+scene.add(axes);
+
+const grid = new THREE.GridHelper(50, 50);
+scene.add(grid);
 
 export function draw(blocks, sizeX, sizeY, sizeZ){
   const offsetX = sizeX / 2;

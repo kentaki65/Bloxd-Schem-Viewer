@@ -89,13 +89,14 @@ export function draw(blocks){
 
     cube.position.set(
       (worldX - minX + 0.5) - offsetX,
-      (worldZ - minZ + 0.5) - offsetZ,
-      -((worldY - minY + 0.5) - offsetY)
+      (worldY - minY + 0.5) - offsetY,
+      (worldZ - minZ + 0.5) - offsetZ
     );
 
     scene.add(cube);
   }
 }
+
 // render loop
 function animate(){
   requestAnimationFrame(animate);

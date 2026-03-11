@@ -100,7 +100,7 @@ export function draw(blocks){
     structure.add(cube);
   }
 
-  structure.rotation.z = Math.PI / 2;
+  structure.rotation.y = Math.PI / 2;
 }
 
 

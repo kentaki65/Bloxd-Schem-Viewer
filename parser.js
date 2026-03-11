@@ -285,8 +285,9 @@ function convertTo3D(avroJson) {
 					const id = decoded[i++]
 					if (id === 0) continue
 					const wx = chunk.x * chunkSize + x
-					const wy = chunk.z * chunkSize + y
-					const wz = chunk.y * chunkSize + z
+					const wy = chunk.y * chunkSize + y
+					const wz = chunk.z * chunkSize + z
+					console.log(chunk.x, chunk.y, chunk.z)
 					result.blocks.push({
 						x: wx,
 						y: wy,
@@ -297,15 +298,15 @@ function convertTo3D(avroJson) {
 			}
 		}	
 	}
-	console.log(
-		Math.min(...result.blocks.map(b=>b.x)),
-		Math.max(...result.blocks.map(b=>b.x))
-	)
+console.log(
+  Math.min(...result.blocks.map(b=>b.x)),
+  Math.max(...result.blocks.map(b=>b.x))
+)
 
-	console.log(
-		Math.min(...result.blocks.map(b=>b.z)),
-		Math.max(...result.blocks.map(b=>b.z))
-	)
+console.log(
+  Math.min(...result.blocks.map(b=>b.z)),
+  Math.max(...result.blocks.map(b=>b.z))
+)
 	return result
 }
 module.exports = {

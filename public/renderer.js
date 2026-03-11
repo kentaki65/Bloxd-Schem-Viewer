@@ -78,6 +78,21 @@ function getBounds(blocks) {
   return { minX, minY, minZ, sizeX, sizeY, sizeZ };
 }
 
+function drawChunkBorder(chunkX, chunkY, chunkZ, chunkSize = 32) {
+  const geometry = new THREE.BoxGeometry(chunkSize, chunkSize, chunkSize);
+  const edges = new THREE.EdgesGeometry(geometry);
+  const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
+
+  const box = new THREE.LineSegments(edges, material);
+
+  box.position.set(
+    chunkX * chunkSize + chunkSize / 2,
+    chunkY * chunkSize + chunkSize / 2,
+    chunkZ * chunkSize + chunkSize / 2
+  );
+
+  structure.add(box);
+}
 
 export function draw(data){
   structure.clear();
@@ -95,7 +110,7 @@ export function draw(data){
     const y = b.y - centerY + 0.5;
     const z = b.z - centerZ + 0.5;
 
-    cube.position.set(x, z, -y);
+    cube.position.set(x, y, z);
     structure.add(cube);
   }
 }

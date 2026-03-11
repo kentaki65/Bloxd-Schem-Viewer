@@ -61,7 +61,6 @@ function getBounds(blocks) {
   let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
 
   for (const b of blocks) {
-
     if (b.x < minX) minX = b.x;
     if (b.y < minY) minY = b.y;
     if (b.z < minZ) minZ = b.z;
@@ -80,28 +79,32 @@ function getBounds(blocks) {
 
 
 export function draw(schematic){
+
   structure.clear();
 
   const {globalX = 0, globalY = 0, globalZ = 0, blocks} = schematic;
   const { minX, minY, minZ, sizeX, sizeY, sizeZ } = getBounds(blocks);
 
-  const centerX = (minX + maxX) / 2;
-  const centerY = (minY + maxY) / 2;
-  const centerZ = (minZ + maxZ) / 2;
+  const centerX = minX + sizeX / 2;
+  const centerY = minY + sizeY / 2;
+  const centerZ = minZ + sizeZ / 2;
 
   structure.add(new THREE.AxesHelper(20));
+
   for (const b of blocks){
+
     const worldX = globalX + b.x;
     const worldY = globalY + b.y;
     const worldZ = globalZ + b.z;
-    const heightOffset = worldZ / 2;
 
     const cube = new THREE.Mesh(geometry, material);
+
     cube.position.set(
       worldX - centerX + 0.5,
-      worldZ - centerZ + 0.5 + heightOffset,
+      worldZ - centerZ + 0.5,
       -(worldY - centerY + 0.5)
     );
+
     structure.add(cube);
   }
 }

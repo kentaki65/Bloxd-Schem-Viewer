@@ -11,7 +11,7 @@ const camera = new THREE.PerspectiveCamera(
   1000
 );
 
-camera.position.set(40,40,40);
+camera.position.set(40, 40, 40);
 
 const renderer = new THREE.WebGLRenderer();
 const viewer = document.getElementById("view");
@@ -22,20 +22,20 @@ viewer.appendChild(renderer.domElement);
 
 // マウス操作
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0,0,0);
+controls.target.set(0, 0, 0);
 controls.update();
 
 
 // ライト
-const light = new THREE.DirectionalLight(0xffffff,1);
-light.position.set(1,1,1);
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(1, 1, 1);
 
 scene.add(light);
-scene.add(new THREE.AmbientLight(0xffffff,0.4));
+scene.add(new THREE.AmbientLight(0xffffff, 0.4));
 
 
 // 共有ジオメトリ
-const geometry = new THREE.BoxGeometry(1,1,1);
+const geometry = new THREE.BoxGeometry(1, 1, 1);
 
 // 共有マテリアル
 const material = new THREE.MeshStandardMaterial({
@@ -48,57 +48,50 @@ scene.add(axes);
 const grid = new THREE.GridHelper(50, 50);
 scene.add(grid);
 
-const CHUNK = 32;
-
-function getBounds(blocks){
+function getBounds(blocks) {
   let minX = Infinity, minY = Infinity, minZ = Infinity;
   let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
 
-  for(const b of blocks){
-    if(b.x < minX) minX = b.x;
-    if(b.y < minY) minY = b.y;
-    if(b.z < minZ) minZ = b.z;
+  for (const b of blocks) {
+    if (b.x < minX) minX = b.x;
+    if (b.y < minY) minY = b.y;
+    if (b.z < minZ) minZ = b.z;
 
-    if(b.x > maxX) maxX = b.x;
-    if(b.y > maxY) maxY = b.y;
-    if(b.z > maxZ) maxZ = b.z;
+    if (b.x > maxX) maxX = b.x;
+    if (b.y > maxY) maxY = b.y;
+    if (b.z > maxZ) maxZ = b.z;
   }
 
   const sizeX = maxX - minX + 1;
   const sizeY = maxY - minY + 1;
   const sizeZ = maxZ - minZ + 1;
 
-  return {minX, minY, minZ, sizeX, sizeY, sizeZ};
+  return { minX, minY, minZ, sizeX, sizeY, sizeZ };
 }
 
 export function draw(blocks){
 
   const {minX, minY, minZ, sizeX, sizeY, sizeZ} = getBounds(blocks);
 
-  const offsetX = sizeX / 2;
-  const offsetY = sizeY / 2;
-  const offsetZ = sizeZ / 2;
+  const centerX = minX + sizeX / 2;
+  const centerY = minY + sizeY / 2;
+  const centerZ = minZ + sizeZ / 2;
 
   for (const b of blocks) {
 
     const cube = new THREE.Mesh(geometry, material);
 
-    const worldX = b.x + (b.chunkX || 0) * CHUNK;
-    const worldY = b.y + (b.chunkY || 0) * CHUNK;
-    const worldZ = b.z + (b.chunkZ || 0) * CHUNK;
-
     cube.position.set(
-      (worldX - minX + 0.5) - offsetX,
-      (worldY - minY + 0.5) - offsetY,
-      (worldZ - minZ + 0.5) - offsetZ
+      b.x - centerX + 0.5,
+      b.y - centerY + 0.5,
+      b.z - centerZ + 0.5
     );
 
     scene.add(cube);
   }
 }
-
 // render loop
-function animate(){
+function animate() {
   requestAnimationFrame(animate);
   controls.update();
   renderer.render(scene, camera);

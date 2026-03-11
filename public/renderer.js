@@ -105,14 +105,16 @@ export function draw(data){
 
   structure.add(new THREE.AxesHelper(20));
   for (const b of blocks) {
+
+    let mat = material
+    if (b.id === 9991) mat = new THREE.MeshBasicMaterial({color:0xff0000})
+    if (b.id === 9992) mat = new THREE.MeshBasicMaterial({color:0x00ff00})
+    if (b.id === 9993) mat = new THREE.MeshBasicMaterial({color:0x0000ff})
+    
     const cube = new THREE.Mesh(geometry, material);
     const x = b.x - centerX + 0.5;
     const y = b.y - centerY + 0.5;
     const z = b.z - centerZ + 0.5;
-
-    if (b.id === 9991) material.color.set(0xff0000) // X
-    if (b.id === 9992) material.color.set(0x00ff00) // Y
-    if (b.id === 9993) material.color.set(0x0000ff) // Z
 
     cube.position.set(x, y, z);
     structure.add(cube);

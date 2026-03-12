@@ -1,9 +1,12 @@
 // renderer.js
 import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
 import { OrbitControls } from "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js";
+import blocksJson from "../blockMetadata.json" assert { type: "json" };
+
+const textureCache = {};
+const loader = new THREE.TextureLoader();
 
 const scene = new THREE.Scene();
-
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
@@ -49,11 +52,19 @@ const material = new THREE.MeshStandardMaterial({
   color: 0xcccccc
 });
 
+function getTexture(id){
+  const block = blocksJson[id];
+  const texName = block.textureInfo;
+
+  if(!textureCache[texName]){
+    textureCache[texName] = loader.load(`textures/${texName}.png`);
+  }
+  return textureCache[texName];
+}
 
 // ブロック格納用
 const structure = new THREE.Group();
 scene.add(structure);
-
 
 function getBounds(blocks) {
 
@@ -78,55 +89,49 @@ function getBounds(blocks) {
   return { minX, minY, minZ, sizeX, sizeY, sizeZ };
 }
 
-function drawChunkBorder(chunkX, chunkY, chunkZ, chunkSize = 32) {
-  const geometry = new THREE.BoxGeometry(chunkSize, chunkSize, chunkSize);
-  const edges = new THREE.EdgesGeometry(geometry);
-  const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
-
-  const box = new THREE.LineSegments(edges, material);
-
-  box.position.set(
-    chunkX * chunkSize + chunkSize / 2,
-    chunkY * chunkSize + chunkSize / 2,
-    chunkZ * chunkSize + chunkSize / 2
-  );
-
-  structure.add(box);
-}
-
-export function draw(data){
+export function draw(data) {
   structure.clear();
 
   const { blocks } = data;
-  const {minX, minY, minZ, sizeX, sizeY, sizeZ} = getBounds(blocks);
+  const { minX, minY, minZ, sizeX, sizeY, sizeZ } = getBounds(blocks);
 
   const centerX = minX + sizeX / 2;
   const centerZ = minZ + sizeZ / 2;
-
   const baseY = minY;
 
   structure.add(new THREE.AxesHelper(20));
 
-  const mesh = new THREE.InstancedMesh(
-    geometry,
-    material,
-    blocks.length
-  );
-
-  const matrix = new THREE.Matrix4();
-  let i = 0;
-
-  for (const b of blocks) {
-
-    const x = b.x - centerX + 0.5;
-    const y = b.y - baseY + 0.5;
-    const z = b.z - centerZ + 0.5;
-
-    matrix.setPosition(x, y, z);
-    mesh.setMatrixAt(i++, matrix);
+  const textureCache = {};
+  function getTexture(name) {
+    if (!textureCache[name]) {
+      textureCache[name] = new THREE.TextureLoader().load(`../textures/${name}.png`);
+    }
+    return textureCache[name];
   }
 
-  structure.add(mesh);
+  const groups = {};
+  for (const b of blocks) {
+    const texName = blocksJson[b.id].textureInfo; // blocksJson は JSON データ
+    if (!groups[texName]) groups[texName] = [];
+    groups[texName].push(b);
+  }
+
+  for (const [texName, blks] of Object.entries(groups)) {
+    const mat = new THREE.MeshBasicMaterial({ map: getTexture(texName) });
+    const mesh = new THREE.InstancedMesh(geometry, mat, blks.length);
+
+    const matrix = new THREE.Matrix4();
+    blks.forEach((b, i) => {
+      const x = b.x - centerX + 0.5;
+      const y = b.y - baseY + 0.5;
+      const z = b.z - centerZ + 0.5;
+
+      matrix.setPosition(x, y, z);
+      mesh.setMatrixAt(i, matrix);
+    });
+
+    structure.add(mesh);
+  }
 }
 
 const axesScene = new THREE.Scene();

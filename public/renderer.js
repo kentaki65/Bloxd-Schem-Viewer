@@ -76,6 +76,44 @@ function getBounds(blocks) {
   return { minX, minY, minZ, sizeX, sizeY, sizeZ };
 }
 
+function getTexture(name) {
+  if (Array.isArray(name)) name = name[0];
+  if (typeof name === "object") name = name.texture || "default";
+  name = name.replace(/\[.*?\]/g, "");
+  if (!name) name = "default";
+
+  if (!textureCache[name]) {
+    try {
+      textureCache[name] = new THREE.TextureLoader().load(
+        `./textures/${name}.png`,
+        undefined,
+        undefined,
+        () => {
+          console.warn(`Failed to load ./textures/${name}.png, using fallback color`);
+          // 読み込み失敗時は単色テクスチャにする
+          const canvas = document.createElement("canvas");
+          canvas.width = canvas.height = 16;
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "#ffffff"; 
+          ctx.fillRect(0, 0, 16, 16);
+          textureCache[name] = new THREE.CanvasTexture(canvas);
+        }
+      );
+    } catch (e) {
+      console.warn(`Error loading texture ${name}:`, e);
+      // エラー時も単色テクスチャで
+      const canvas = document.createElement("canvas");
+      canvas.width = canvas.height = 16;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, 16, 16);
+      textureCache[name] = new THREE.CanvasTexture(canvas);
+    }
+  }
+
+  return textureCache[name];
+}
+
 export function draw(data) {
   structure.clear();
 
@@ -87,23 +125,11 @@ export function draw(data) {
   const baseY = minY;
 
   structure.add(new THREE.AxesHelper(20));
-
-  function getTexture(name) {
-    if (Array.isArray(name)) name = name[0];
-    if (typeof name === "object") name = name.texture || "default";
-    name = name.replace(/\[.*?\]/g, "");
-    if (!name) name = "default";
-    if (!textureCache[name]) {
-      textureCache[name] = new THREE.TextureLoader().load(`./textures/${name}.png`);
-    }
-
-    return textureCache[name];
-  }
   const groups = {};
   for (const b of blocks) {
     const key = b.id;
     let texName = blocksJson[key].textureInfo;
-    if (Array.isArray(texName)) texName = texName[0]; // 代表テクスチャだけ使用
+    if (Array.isArray(texName)) texName = texName[0];
     if (!groups[texName]) groups[texName] = [];
     groups[texName].push(b);
   }

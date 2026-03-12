@@ -49,20 +49,6 @@ scene.add(grid);
 // shared geometry/material
 const geometry = new THREE.BoxGeometry(1.001, 1.001, 1.001);
 
-const material = new THREE.MeshStandardMaterial({
-  color: 0xcccccc
-});
-
-function getTexture(id){
-  const block = blocksJson[id];
-  const texName = block.textureInfo;
-
-  if(!textureCache[texName]){
-    textureCache[texName] = loader.load(`textures/${texName}.png`);
-  }
-  return textureCache[texName];
-}
-
 // ブロック格納用
 const structure = new THREE.Group();
 scene.add(structure);
@@ -112,7 +98,8 @@ export function draw(data) {
 
   const groups = {};
   for (const b of blocks) {
-    const texName = blocksJson[b.id].textureInfo; // blocksJson は JSON データ
+    const key = b.id ?? b[String(id)];
+    const texName = blocksJson[key].textureInfo; // blocksJson は JSON データ
     if (!groups[texName]) groups[texName] = [];
     groups[texName].push(b);
   }

@@ -88,7 +88,6 @@ export function draw(data) {
 
   structure.add(new THREE.AxesHelper(20));
 
-  const textureCache = {};
   function getTexture(name) {
     if (Array.isArray(name)) {
       name = name[0];
@@ -105,8 +104,9 @@ export function draw(data) {
   }
   const groups = {};
   for (const b of blocks) {
-    const key = b.id ?? b[String(id)];
-    const texName = blocksJson[key].textureInfo; // blocksJson は JSON データ
+    const key = b.id;
+    let texName = blocksJson[key].textureInfo;
+    if (Array.isArray(texName)) texName = texName[0]; // 代表テクスチャだけ使用
     if (!groups[texName]) groups[texName] = [];
     groups[texName].push(b);
   }

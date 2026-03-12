@@ -1,16 +1,22 @@
 body {
   margin: 0;
   box-sizing: border-box;
+  height: 100vh;
 }
 
 .screen {
-  height: 100dvh;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
 
 .viewer {
   flex: 1;
+  overflow: hidden;
+}
+
+.viewer canvas {
+  display: block;
 }
 
 .dropdownMenu {

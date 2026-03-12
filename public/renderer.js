@@ -99,25 +99,34 @@ export function draw(data){
 
   const { blocks } = data;
   const {minX, minY, minZ, sizeX, sizeY, sizeZ} = getBounds(blocks);
+
   const centerX = minX + sizeX / 2;
-  const centerY = minY + sizeY / 2;
   const centerZ = minZ + sizeZ / 2;
 
+  const baseY = minY;
+
   structure.add(new THREE.AxesHelper(20));
+
+  const mesh = new THREE.InstancedMesh(
+    geometry,
+    material,
+    blocks.length
+  );
+
+  const matrix = new THREE.Matrix4();
+  let i = 0;
+
   for (const b of blocks) {
-    let mat = material
-    if (b.id === 9991) mat = new THREE.MeshBasicMaterial({color:0xff0000})
-    if (b.id === 9992) mat = new THREE.MeshBasicMaterial({color:0x00ff00})
-    if (b.id === 9993) mat = new THREE.MeshBasicMaterial({color:0x0000ff})
-    
-    const cube = new THREE.Mesh(geometry, mat);
+
     const x = b.x - centerX + 0.5;
-    const y = b.y - centerY + 0.5;
+    const y = b.y - baseY + 0.5;
     const z = b.z - centerZ + 0.5;
 
-    cube.position.set(x, y, z);
-    structure.add(cube);
+    matrix.setPosition(x, y, z);
+    mesh.setMatrixAt(i++, matrix);
   }
+
+  structure.add(mesh);
 }
 
 const axesScene = new THREE.Scene();

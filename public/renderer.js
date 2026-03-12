@@ -91,7 +91,7 @@ export function draw(data) {
   const textureCache = {};
   function getTexture(name) {
     if (!textureCache[name]) {
-      textureCache[name] = new THREE.TextureLoader().load(`../textures/${name}.png`);
+      textureCache[name] = new THREE.TextureLoader().load(`./textures/${name}.png`);
     }
     return textureCache[name];
   }

@@ -128,7 +128,7 @@ export function draw(data) {
   const groups = {};
   for (const b of blocks) {
     const key = b.id;
-    let texName = blocksJson[key].textureInfo;
+    let texName = blocksJson[key]?.textureInfo;
     if (Array.isArray(texName)) texName = texName[0];
     if (!groups[texName]) groups[texName] = [];
     groups[texName].push(b);

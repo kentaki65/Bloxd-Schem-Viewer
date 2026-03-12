@@ -89,17 +89,14 @@ export function draw(data) {
   structure.add(new THREE.AxesHelper(20));
 
   function getTexture(name) {
-    if (Array.isArray(name)) {
-      name = name[0];
+    if (Array.isArray(name)) name = name[0];
+    if (typeof name === "object") name = name.texture || "default";
+    name = name.replace(/\[.*?\]/g, "");
+    if (!name) name = "default";
+    if (!textureCache[name]) {
+      textureCache[name] = new THREE.TextureLoader().load(`./textures/${name}.png`);
     }
 
-    if (!textureCache[name]) {
-      try {
-        textureCache[name] = new THREE.TextureLoader().load(`./textures/${name}.png`);
-      } catch (e) {
-        console.log(`./textures/${name}.png couldn't load`);
-      }
-    }
     return textureCache[name];
   }
   const groups = {};

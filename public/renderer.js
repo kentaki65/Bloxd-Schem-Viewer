@@ -90,12 +90,19 @@ export function draw(data) {
 
   const textureCache = {};
   function getTexture(name) {
+    if (Array.isArray(name)) {
+      name = name[0];
+    }
+
     if (!textureCache[name]) {
-      textureCache[name] = new THREE.TextureLoader().load(`./textures/${name}.png`);
+      try {
+        textureCache[name] = new THREE.TextureLoader().load(`./textures/${name}.png`);
+      } catch (e) {
+        console.log(`./textures/${name}.png couldn't load`);
+      }
     }
     return textureCache[name];
   }
-
   const groups = {};
   for (const b of blocks) {
     const key = b.id ?? b[String(id)];

@@ -2,7 +2,7 @@
 import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
 import { OrbitControls } from "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js";
 let blocksJson = {};
-(async () => blocksJson = await fetch("../blockMetadata.json").then(r => r.json()))();
+(async () => blocksJson = await fetch("./blockMetadata.json").then(r => r.json()))();
 
 const textureCache = {};
 const loader = new THREE.TextureLoader();
